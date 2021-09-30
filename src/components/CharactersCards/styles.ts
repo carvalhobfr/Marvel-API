@@ -10,25 +10,28 @@ export const Container = styled.div`
     flex-direction: row;
     flex-wrap: wrap;
     padding-left: 0;
-    justify-content: space-between;
+    justify-content: center;
 
     li {
-      max-width: 300px;
       list-style: none;
-      margin-bottom: 1rem;
+      margin: 0 auto 1rem;
+      max-width: 300px;
 
       @media (min-width: 920px){
-      margin: 1rem 0rem;
-      }
+      margin: 0.5rem;
+      max-width: 200px;
+      
+    }
+
 
       img {
         max-width: 100%;
       }
       .card-body {
-        height: 150px;
+        height: 180px;
         .card-text {
         display: -webkit-box;
-        -webkit-line-clamp: 3;
+        -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;  
         overflow: hidden;
         }

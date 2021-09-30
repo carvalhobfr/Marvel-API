@@ -25,7 +25,7 @@ export function Home() {
     api.get(`characters?`)
       .then(result => {
         setCharacters(result.data.data.results);
-        setNumberOfPages(Math.ceil(result.data.data.total / 12));
+        setNumberOfPages(Math.ceil(result.data.data.total / 15));
         setLoading(false);
       });
   };
@@ -37,7 +37,7 @@ export function Home() {
       .then(result => {
         setNameSearch(value);
         setCharacters(result.data.data.results);
-        setNumberOfPages(Math.ceil(result.data.data.total / 12));
+        setNumberOfPages(Math.ceil(result.data.data.total / 15));
         setLoading(false);
       });
   };
@@ -46,10 +46,10 @@ export function Home() {
   function searchPageCharacters(page: number): void {
     setLoading(true);
 
-    api.get(`characters?${nameSearch !== '' ? `nameStartsWith=${nameSearch}` : ''}&offset=${page * 12 - 12}`)
+    api.get(`characters?${nameSearch !== '' ? `nameStartsWith=${nameSearch}` : ''}&offset=${page * 15 - 15}`)
       .then(result => {
         setCharacters(result.data.data.results);
-        setNumberOfPages(Math.ceil(result.data.data.total / 12));
+        setNumberOfPages(Math.ceil(result.data.data.total / 15));
         setLoading(false);
       });
   };
