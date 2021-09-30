@@ -32,7 +32,7 @@ export default createGlobalStyle`
 
   body, input, textarea, button {
     font-family: 'PT Sans', sans-serif;
-    font-weight: 400;
+    font-weight: 500;
   }
 
   button {

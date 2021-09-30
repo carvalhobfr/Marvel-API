@@ -14,3 +14,17 @@ export const Container = styled.main`
     }
   }
 `;
+
+export const Nav = styled.nav`
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  text-align: center;
+
+  a {
+    transition: color 0.3s;
+  }
+
+  a:hover {
+    color: var(--red);
+  }
+`;

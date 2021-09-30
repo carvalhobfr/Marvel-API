@@ -28,8 +28,6 @@ export function SearchCharacter({ onSearchCharacter }: SearchCharacterProps) {
 
       <Search onSubmit={handleSubmit}>
         <label htmlFor="search">
-          Name
-
           <div>
             <input
               type="text"

@@ -19,8 +19,9 @@ export const Container = styled.header`
 `;
 
 export const Search = styled.form`
-  width: 295px;
-  margin-top: 16px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 500px;
 
   label {
     font-family: 'PT Sans Caption', sans-serif;

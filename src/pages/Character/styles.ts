@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   width: 100%;
-  padding: 5rem 3rem 2rem 3rem;
+  padding: 2rem 3rem;
 
   @media screen and (max-width: 600px) {
     padding: 0 1.5rem 3rem 1.5rem;
@@ -17,22 +17,37 @@ export const Content = styled.article`
   h2 {
     margin: 6rem 0 3rem 0;
     padding: 1rem;
+    /* color: var(--red); */
     font-family: 'Bebas Neue', sans-serif;
     font-size: 3.75rem;
+    line-height: 7rem;
+    font-weight: 900;
     text-align: center;
-    background: url('/background.png') center center no-repeat;
+    background: url(/background.png) center bottom no-repeat;
+    background-size: cover;
+  }
+
+  h2:nth-child(2){
+    background: url(/background.png) center center no-repeat;
+    background-size: cover;
   }
 `;
 
-export const ContentHeader = styled.header`
-  width: 900px;
+export const CharacterInfo = styled.div`
+  width: 800px;
   margin: 0 auto;
   display: flex;
   align-items: center;
+  flex-direction: column;
+
+  nav {
+    align-self: flex-start;
+    padding: 2rem 0;
+  }
 
   div {
     h1 {
-      padding-bottom: 1rem;
+      padding: 2rem 0 1rem;
       font-family: 'Bebas Neue', sans-serif;
       font-size: 4.5rem;
       text-align: center;
@@ -141,7 +156,7 @@ export const MidiaBox = styled.div`
     height: 21rem;
     border-bottom: solid 0.4rem var(--red);
     overflow: hidden;
-    z-index: 100;
+    z-index: 2;
     
     img {
       width: 100%;

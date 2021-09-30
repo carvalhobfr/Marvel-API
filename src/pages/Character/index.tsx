@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Container,
   Content,
-  ContentHeader,
+  CharacterInfo,
   ContainerMidia,
   MidiaBox,
   Nav
@@ -100,12 +100,12 @@ export function Character() {
           <Loading />
         )}
         <Content>
-        <Nav>
-          <Link to="/">
-            ← home
-          </Link>
-        </Nav>
-          <ContentHeader>
+          <CharacterInfo>
+          <Nav>
+            <Link to="/">
+              ← home  
+            </Link>
+          </Nav>
             <img
               src={`${characterData?.thumbnail.path.replace('http', 'https')}/portrait_uncanny.${characterData?.thumbnail.extension}`}
               alt={characterData?.name}
@@ -115,7 +115,7 @@ export function Character() {
               <h1>{characterData?.name}</h1>
               <p>{characterData?.description}</p>
             </div>
-          </ContentHeader>
+          </CharacterInfo>
 
           <h2>Comics</h2>
           <ContainerMidia>
@@ -193,12 +193,6 @@ export function Character() {
             ))}
           </ContainerMidia>
         </Content>
-
-        <Nav>
-          <Link to="/">
-            Home
-          </Link>
-        </Nav>
       </Container>
     </>
   );

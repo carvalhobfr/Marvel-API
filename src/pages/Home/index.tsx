@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CharactersCards } from "../../components/CharactersCards";
 import { SearchCharacter } from "../../components/SearchCharacter";
-import { Container } from "./styles";
+import { Container , Nav} from "./styles";
 
 import api from "../../services/api";
 
@@ -17,19 +17,22 @@ export function Home() {
 
   useEffect(() => {
     setLoading(true)
-
+    renderCharacters();
+  }, []);
+  
+  function renderCharacters(): void {
+    setLoading(true);
     api.get(`characters?`)
       .then(result => {
         setCharacters(result.data.data.results);
-        console.log("characters1", characters)
         setNumberOfPages(Math.ceil(result.data.data.total / 12));
         setLoading(false);
       });
-  }, []);
+  };
 
   function searchCharacters(value: string): void {
     setLoading(true);
-    console.log("characters2", characters)
+
     api.get(`characters?nameStartsWith=${value}`)
       .then(result => {
         setNameSearch(value);
@@ -39,10 +42,11 @@ export function Home() {
       });
   };
 
+
   function searchPageCharacters(page: number): void {
     setLoading(true);
 
-    api.get(`characters?${nameSearch !== '' ? `nameStartsWith=${nameSearch}` : ''}&offset=${page * 10 - 10}`)
+    api.get(`characters?${nameSearch !== '' ? `nameStartsWith=${nameSearch}` : ''}&offset=${page * 12 - 12}`)
       .then(result => {
         setCharacters(result.data.data.results);
         setNumberOfPages(Math.ceil(result.data.data.total / 12));
@@ -62,7 +66,15 @@ export function Home() {
             <SearchCharacter onSearchCharacter={searchCharacters} />
 
             {characters.length === 0 ? (
-              <h2>We didn't find any character name: <strong>{nameSearch}</strong></h2>
+              <>
+
+              <h2>Character <strong>{nameSearch}</strong> not found</h2>
+              <Nav>
+                <a href="/">
+                  ← home  
+                </a>
+              </Nav>
+              </>
             ) : (
               <CharactersCards characters={characters} />
             )}
