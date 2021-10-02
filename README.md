@@ -1,7 +1,8 @@
 Name: Matheus Rodrigues Carvalho
 Title: Growin - FE Engineer - Coding Challenge - MARVEL API
 
-Install:
+Build:
 1- Replace your API key in .env.local
-2- yarn 
-3- yarn start
+2- npm i
+3- npm start
+

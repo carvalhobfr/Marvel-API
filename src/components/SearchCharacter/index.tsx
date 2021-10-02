@@ -32,7 +32,7 @@ export function SearchCharacter({ onSearchCharacter }: SearchCharacterProps) {
             <input
               type="text"
               id="search"
-              placeholder="Search"
+              placeholder="Search a character"
               value={searchCharacter}
               onChange={event => {
                 setSearchCharacter(event.target.value);

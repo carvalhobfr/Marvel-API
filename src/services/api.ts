@@ -9,7 +9,7 @@ const hashValue = getApiHash(timeStamp, privateKey, publicKey);
 const api = axios.create({
   baseURL: `https://gateway.marvel.com/v1/public`,
   params: {
-    limit: 15,
+    limit: 100,
     ts: timeStamp,
     apikey: publicKey,
     hash: hashValue
