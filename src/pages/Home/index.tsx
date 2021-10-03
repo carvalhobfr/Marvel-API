@@ -13,18 +13,24 @@ export function Home() {
   let [numberOfPages, setNumberOfPages] = useState(0);
   let [charLocalList, setCharLocalList] = useState<any[]>([]);
   let [characters, setCharacters ] = useState<any[]>([]);
+  let [filteredCharacters, setFilteredCharacters ] = useState<any[]>([]);
   const [nameSearch, setNameSearch] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true)
     renderCharactersList()
+    handleSelect(event)
   }, []);
+
+document.body.addEventListener('click', console.log("oi"));
 
     async function totalOfPages() {
       await api.get(`characters`)
           .then(result => {
+          console.log("result.data.data.total",result.data.data.total)
           numberOfPages = (Math.ceil(result.data.data.total / 15))
+          //render first page
           setCharacters(result.data.data.results.slice(0,15))
           localStorage.setItem("numberOfPages", JSON.stringify(numberOfPages))
         });
@@ -46,62 +52,41 @@ export function Home() {
     } else {
       await totalOfPages();
       let charApi:any[] = []
-      console.log("numberOfPages222", numberOfPages)
       for (let i = 1; i <= Math.ceil(numberOfPages/10); i++) {
         await api.get(`characters?offset=${i*100}`)
           // eslint-disable-next-line no-loop-func
           .then(result => {
           charApi = charApi.concat(result.data.data.results);
-          console.log(i);
         });
       }
       await setCharLocalList(charApi)
-      console.log("charApi",charApi)
       localStorage.setItem("charactersLocal", JSON.stringify(charApi))
     }
-    setLoading(false) 
+      setLoading(false) 
   };
-
-    //  async function renderAllCharacters() {
-    //    let charApi:any[] = []
-    //    await totalOfPages();
-    //    console.log("numberOfPages222", numberOfPages)
-    //   for (let i = 1; i <= numberOfPages; i++) {
-    //     await api.get(`characters?offset=${i*100}`)
-    //       // eslint-disable-next-line no-loop-func
-    //       .then(result => {
-    //       charApi = charApi.concat(result.data.data.results);
-    //     });
-    //   }
-    //   setCharacters(charApi.slice(0,15)) 
-    //   setCharLocalList(charApi)
-    //   console.log("charApi", charApi)
-     
-    // }
-
-
 
   async function searchCharacters(characterName: string) { 
     setNameSearch(characterName);
-    setLoading(true);
     const asArray = await Object.entries(charLocalList);  
     const arrayValue = asArray.map(([key, value]) =>  value)
     const filtered = await arrayValue.filter(value => value.name.toLowerCase().includes
     (characterName.toLowerCase()))
-    await setCharacters(filtered);
+    await setCharacters(filtered.slice(0,15));
+    setFilteredCharacters(filtered)
     setNumberOfPages(Math.ceil(filtered.length / 15));
-    setLoading(false);
   };
 
 
- async function searchPageCharacters(page: number){
+ async function paginationCharacters(page: number){
      if (nameSearch !== "") {
-       searchCharacters(nameSearch)
+      await searchCharacters(nameSearch)
+      await setCharacters(filteredCharacters.slice((page-1)*15, page*15));
      } else {
        await setCharacters(charLocalList.slice((page-1)*15, page*15)) 
-       setLoading(false)
+       setLoading(false);
      }
   };
+
 
   return (
     <>
@@ -115,7 +100,6 @@ export function Home() {
             <SearchCharacter onSearchCharacter={searchCharacters} />
             {characters.length === 0 ? (
               <>
-
               <h2>Character <strong>{nameSearch}</strong> not found</h2>
               <Nav>
                 <a href="/">
@@ -132,13 +116,13 @@ export function Home() {
           {numberOfPages === 0 ? (
         <Pagination
         numberOfPages={1}
-        changePage={searchPageCharacters}
+        changePage={paginationCharacters}
         characterName={nameSearch}
       />
         ) : (
       <Pagination
         numberOfPages={numberOfPages}
-        changePage={searchPageCharacters}
+        changePage={paginationCharacters}
         characterName={nameSearch}
       />
       )}
