@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { FormEvent,useEffect, useState } from "react";
 import {
   Container,
   Content,
   CharacterInfo,
   ContainerMidia,
   MidiaBox,
-  Nav
+  Nav,
+  InputEdit,
+  EditButton
 } from "./styles";
 
 import api from "../../services/api";
@@ -64,18 +66,28 @@ export function Character() {
   const [comics, setComics] = useState<Comic[]>();
   const [series, setSeries] = useState<Serie[]>();
   const [events, setEvents] = useState<Event[]>();
+  const [charName, setCharName] = useState("");
+  const [charImage, setCharImage] = useState("");
+  const [isToggled, setToggled] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
   const { id }: ParamsProps = useParams();
+  const toggleTrueFalse = () => setToggled(!isToggled);
+  const localStorageCharacter =  localStorage.getItem('charactersLocal') as  string
+
+  const charById = JSON.parse(localStorageCharacter).filter((x: { id: number; }) => x.id === parseInt(`${id}`))[0]
 
   useEffect(() => {
     setLoading(true);
-    api.get(`characters?id=${id}`).then(result => {
-      setCharacterData(result.data.data.results[0]);
-      setLoading(false);
-    });
-
+    setCharacterData(charById);
+    setCharName(charById.name)
+    if (charById.imageUrl !== "" && charById.imageUrl !== undefined && charById.imageUrl !== "undefined/portrait_uncanny.undefined") {
+      setCharImage(charById.imageUrl)
+    } else {
+      setCharImage(`${charById.thumbnail.path.replace('http', 'https')}/portrait_uncanny.${charById.thumbnail.extension}`)
+    }
+    setLoading(false);
     api.get(`characters/${id}/comics`).then(result => {
       setComics(result.data.data.results);
     });
@@ -91,10 +103,30 @@ export function Character() {
 
   }, [id]);
 
+  useEffect(() => {
+    charById.name = charName
+    let oldLocalObject = JSON.parse(localStorageCharacter)
+    let newNameObject = [charById]
+    let newLocalObject= oldLocalObject.map((obj: { id: number; }) => newNameObject.find((o: { id: number; }) => o.id === obj.id) || obj)
+    localStorage.setItem("charactersLocal", JSON.stringify(newLocalObject))
+  }, [charName]);
+
+  useEffect(() => {
+    charById.imageUrl = charImage
+    let oldLocalObjectImage = JSON.parse(localStorageCharacter)
+    let newNameObjectImage = [charById]
+    let newLocalObjectImage= oldLocalObjectImage.map((obj: { id: number; }) => newNameObjectImage.find((o: { id: number; }) => o.id === obj.id) || obj)
+    localStorage.setItem("charactersLocal", JSON.stringify(newLocalObjectImage))
+  }, [charImage]);
+
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+  }
+
   return (
     <>
       <Header />
-
       <Container>
         {loading && (
           <Loading />
@@ -107,13 +139,48 @@ export function Character() {
             </Link>
           </Nav>
             <img
-              src={`${characterData?.thumbnail.path.replace('http', 'https')}/portrait_uncanny.${characterData?.thumbnail.extension}`}
+              src={charImage}
               alt={characterData?.name}
             />
-
             <div>
-              <h1>{characterData?.name}</h1>
-              <p>{characterData?.description}</p>
+              <h1>{charName}</h1>
+      
+        <EditButton onClick={toggleTrueFalse}>
+          Edit
+        </EditButton>
+        { isToggled ?
+        <>
+            <InputEdit onSubmit={handleSubmit}>
+        <label htmlFor="edit value">
+          <div>
+            <input
+              type="text"
+              id="changeName"
+              placeholder="Change character name"
+              onChange={e => {
+                setCharName(e.target.value);
+              }}
+            />
+          </div>
+        </label>
+      </InputEdit>
+      <InputEdit onSubmit={handleSubmit}>
+        <label htmlFor="edit value">
+          <div>
+            <input
+              type="text"
+              id="changePhoto"
+              placeholder="Change character photo(url)"
+              onChange={e => {
+                setCharImage(e.target.value);
+              }}
+            />
+          </div>
+        </label>
+      </InputEdit>
+         </>  :   <></>
+      }
+  <p>{characterData?.description}</p>
             </div>
           </CharacterInfo>
 

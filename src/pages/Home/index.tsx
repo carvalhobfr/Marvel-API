@@ -20,21 +20,18 @@ export function Home() {
   useEffect(() => {
     setLoading(true)
     renderCharactersList()
-    handleSelect(event)
   }, []);
 
-document.body.addEventListener('click', console.log("oi"));
+
 
     async function totalOfPages() {
       await api.get(`characters`)
           .then(result => {
-          console.log("result.data.data.total",result.data.data.total)
           numberOfPages = (Math.ceil(result.data.data.total / 15))
           //render first page
           setCharacters(result.data.data.results.slice(0,15))
           localStorage.setItem("numberOfPages", JSON.stringify(numberOfPages))
         });
-        setLoading(false)
         return numberOfPages;
     }
 
@@ -52,7 +49,7 @@ document.body.addEventListener('click', console.log("oi"));
     } else {
       await totalOfPages();
       let charApi:any[] = []
-      for (let i = 1; i <= Math.ceil(numberOfPages/10); i++) {
+      for (let i = 0; i < Math.ceil(numberOfPages/11); i++) {
         await api.get(`characters?offset=${i*100}`)
           // eslint-disable-next-line no-loop-func
           .then(result => {

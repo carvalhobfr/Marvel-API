@@ -11,6 +11,7 @@ interface Character {
   id: number;
   name: string;
   description: string;
+  imageUrl: string;
   thumbnail: {
     path: string;
     extension: string;
@@ -21,7 +22,7 @@ interface CharactersCardsProps {
   characters: Character[];
 }
 
-export function CharactersCards({ characters }: CharactersCardsProps) {
+export function CharactersCards({ characters }: CharactersCardsProps) {    
   return (
     <Container>
       <ul>
@@ -29,7 +30,7 @@ export function CharactersCards({ characters }: CharactersCardsProps) {
           <li key={character.id}>
             <Card>
                 <Link to={`character/${character.id}`}>
-                  <CardImg top width="100%" src={`${character.thumbnail.path.replace('http', 'https')}/portrait_uncanny.${character.thumbnail.extension}`} alt={character.name} />
+                  <CardImg top width="100%" src={character.imageUrl || `${character.thumbnail.path.replace('http', 'https')}/portrait_uncanny.${character.thumbnail.extension}` } />
                 </Link>
               <CardBody>
                 <CardTitle tag="h5">             
