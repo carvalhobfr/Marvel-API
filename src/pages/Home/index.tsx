@@ -10,80 +10,49 @@ import { Pagination } from "../../components/Pagination";
 import { Loading } from "../../components/Loading";
 
 export function Home() {
-  let [numberOfPages, setNumberOfPages] = useState(0);
-  let [charLocalList, setCharLocalList] = useState<any[]>([]);
-  let [characters, setCharacters ] = useState<any[]>([]);
-  let [filteredCharacters, setFilteredCharacters ] = useState<any[]>([]);
+  const [numberOfPages, setNumberOfPages] = useState(0);
   const [nameSearch, setNameSearch] = useState('');
+  const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true)
-    renderCharactersList()
+    renderCharacters();
   }, []);
-
-
-
-    async function totalOfPages() {
-      await api.get(`characters`)
-          .then(result => {
-          numberOfPages = (Math.ceil(result.data.data.total / 15))
-          //render first page
-          setCharacters(result.data.data.results.slice(0,15))
-          localStorage.setItem("numberOfPages", JSON.stringify(numberOfPages))
-        });
-        return numberOfPages;
-    }
-
-//função para pegar dados da api:
-  async function renderCharactersList() {
-    if (localStorage.getItem('charactersLocal') && localStorage.getItem('numberOfPages')) {
-      const localStorageCharacter =  localStorage.getItem('charactersLocal') as  string
-      const localNumberOfPages =  localStorage.getItem('numberOfPages') as  string
-
-      let numberOfPagesLocal = parseInt(localNumberOfPages)
-      let charJsonLocalList = JSON.parse(localStorageCharacter)
-      setCharLocalList(charJsonLocalList);
-      setNumberOfPages(numberOfPagesLocal)
-      setCharacters(charJsonLocalList.slice(0,15))
-    } else {
-      await totalOfPages();
-      let charApi:any[] = []
-      for (let i = 0; i < Math.ceil(numberOfPages/11); i++) {
-        await api.get(`characters?offset=${i*100}`)
-          // eslint-disable-next-line no-loop-func
-          .then(result => {
-          charApi = charApi.concat(result.data.data.results);
-        });
-      }
-      await setCharLocalList(charApi)
-      localStorage.setItem("charactersLocal", JSON.stringify(charApi))
-    }
-      setLoading(false) 
+  
+  function renderCharacters(): void {
+    setLoading(true);
+    api.get(`characters?`)
+      .then(result => {
+        setCharacters(result.data.data.results);
+        setNumberOfPages(Math.ceil(result.data.data.total / 15));
+        setLoading(false);
+      });
   };
 
-  async function searchCharacters(characterName: string) { 
-    setNameSearch(characterName);
-    const asArray = await Object.entries(charLocalList);  
-    const arrayValue = asArray.map(([key, value]) =>  value)
-    const filtered = await arrayValue.filter(value => value.name.toLowerCase().includes
-    (characterName.toLowerCase()))
-    await setCharacters(filtered.slice(0,15));
-    setFilteredCharacters(filtered)
-    setNumberOfPages(Math.ceil(filtered.length / 15));
+  function searchCharacters(value: string): void {
+    setLoading(true);
+
+    api.get(`characters?nameStartsWith=${value}`)
+      .then(result => {
+        setNameSearch(value);
+        setCharacters(result.data.data.results);
+        setNumberOfPages(Math.ceil(result.data.data.total / 15));
+        setLoading(false);
+      });
   };
 
 
- async function paginationCharacters(page: number){
-     if (nameSearch !== "") {
-      await searchCharacters(nameSearch)
-      await setCharacters(filteredCharacters.slice((page-1)*15, page*15));
-     } else {
-       await setCharacters(charLocalList.slice((page-1)*15, page*15)) 
-       setLoading(false);
-     }
-  };
+  function searchPageCharacters(page: number): void {
+    setLoading(true);
 
+    api.get(`characters?${nameSearch !== '' ? `nameStartsWith=${nameSearch}` : ''}&offset=${page * 15 - 15}`)
+      .then(result => {
+        setCharacters(result.data.data.results);
+        setNumberOfPages(Math.ceil(result.data.data.total / 15));
+        setLoading(false);
+      });
+  };
 
   return (
     <>
@@ -95,12 +64,14 @@ export function Home() {
         ) : (
           <>
             <SearchCharacter onSearchCharacter={searchCharacters} />
+
             {characters.length === 0 ? (
               <>
+
               <h2>Character <strong>{nameSearch}</strong> not found</h2>
               <Nav>
                 <a href="/">
-                  back to home  
+                  ← home  
                 </a>
               </Nav>
               </>
@@ -110,19 +81,12 @@ export function Home() {
           </>
         )}
       </Container>
-          {numberOfPages === 0 ? (
-        <Pagination
-        numberOfPages={1}
-        changePage={paginationCharacters}
-        characterName={nameSearch}
-      />
-        ) : (
+
       <Pagination
         numberOfPages={numberOfPages}
-        changePage={paginationCharacters}
+        changePage={searchPageCharacters}
         characterName={nameSearch}
       />
-      )}
     </>
   );
 }
